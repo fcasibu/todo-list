@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/all.min.css" />
+    <link rel="stylesheet" href="./css/normalize.css" />
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./css/style.min.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Todo</title>
+  </head>
+  <body>
+    <header class="header">
+      <button class="menu-burger toggle-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <div class="container flex">
+      <aside class="sidebar">
+        <ul class="tasks flex">
+          <li class="tasks__all task selected">
+            <i class="fa-solid fa-calendar"></i> All
+          </li>
+          <li class="tasks__today task">
+            <i class="fa-solid fa-calendar-day"></i> Today
+          </li>
+          <li class="tasks__week task">
+            <i class="fa-solid fa-calendar-week"></i> Week
+          </li>
+          <li class="tasks__completed task">
+            <i class="fa-solid fa-calendar-check"></i> Completed
+          </li>
+          <li class="tasks__projects task">
+            <div class="projects-header">
+              <div>
+                <i class="fa-solid fa-list"></i> Projects
+                <span class="projects-count">(3)</span>
+              </div>
+              <i class="fa-solid fa-angle-down arrow-down"></i>
+            </div>
+            <div class="new-project flex show-modal addproject">
+              <i class="fa-solid fa-circle-plus"></i>
+              <p>Add new project</p>
+            </div>
+            <div class="projects"></div>
+          </li>
+        </ul>
+      </aside>
+      <div class="main-content-container"></div>
+    </div>
+    <div class="add-project-modal">
+      <div class="add-project-header">
+        <h2>New Project <i class="fa-solid fa-xmark close-modal"></i></h2>
+      </div>
+      <form>
+        <label for="project-title">Title</label>
+        <input
+          type="text"
+          name="Project Title"
+          id="project-title"
+          required
+          autocomplete="off"
+        />
+        <button type="submit" class="add-project-btn">Add project</button>
+      </form>
+    </div>
+    <div class="add-task-modal">
+      <div class="add-task-header">
+        <h2>New Task <i class="fa-solid fa-xmark close-modal"></i></h2>
+      </div>
+      <form>
+        <div class="title-box">
+          <label for="task-title">Title</label>
+          <input type="text" name="Task Title" id="task-title" required />
+        </div>
+        <div class="description-box">
+          <label for="task-description">Description</label>
+          <textarea
+            name="Description"
+            id="task-description"
+            cols="30"
+            rows="5"
+          ></textarea>
+        </div>
+        <div class="date-box">
+          <label for="task-date">Due Date</label>
+          <input type="date" name="Task Due Date" id="task-date" required />
+        </div>
+        <div class="priority-box">
+          <label for="task-priority">Priority</label>
+          <select name="Task Priority" id="task-priority">
+            <option value="Not Important">Not Important</option>
+            <option value="Important">Important</option>
+            <option value="Very Important">Very Important</option>
+          </select>
+        </div>
+        <div class="projects-box">
+          <label for="task-projects">Project Name</label>
+          <select name="Task Projects" id="task-projects"></select>
+        </div>
+        <button type="submit" class="add-task-btn">Add task</button>
+      </form>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
