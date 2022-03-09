@@ -1,6 +1,7 @@
 import dom from "./dom";
 import tasks from "./tasks";
 import projects from "./projects";
+import storage from "./localStorage";
 
 const eventHandlers = (() => {
   const windowResize = () => {
@@ -40,14 +41,21 @@ const eventHandlers = (() => {
 
         const validCheck = projects.checkValidity();
         dom.displayProjects();
-        dom.displayTasks();
-        if (validCheck === true) {
-          dom.hideModal();
-        }
+        const projectAll = document.querySelectorAll(".selected");
+        projectAll.forEach((item) => item.classList.remove("selected"));
+
         const project = document.querySelectorAll(".project");
         project.forEach((item) => item.classList.remove("selected"));
 
         project[project.length - 1].classList.add("selected");
+
+        const taskProject = document.querySelector(".tasks__projects");
+        taskProject.children[0].children[1].classList.add("rotate-arrow");
+        taskProject.children[2].classList.add("hide-projects");
+        dom.displayTasks();
+        if (validCheck === true) {
+          dom.hideModal();
+        }
       }
 
       if (e.target.classList.contains("add-task-btn")) {
@@ -61,23 +69,71 @@ const eventHandlers = (() => {
       }
 
       if (e.target.classList.contains("task-delete")) {
-        const { index } = e.target.parentElement.parentElement.dataset;
-        dom.removeTask(index);
+        const title = e.target.parentElement.previousElementSibling.children[2];
+
+        dom.removeTask(title.textContent);
       }
 
-      if (e.target.id === "checkbox") {
+      if (e.target.type === "checkbox") {
         const index =
-          e.target.parentElement.parentElement.getAttribute("data-index");
-        const getArrayItem = tasks.taskList[index];
+          e.target.parentElement.parentElement.getAttribute(
+            "data-project-index"
+          );
+        const title = e.target.parentElement.children[2].textContent;
+        const x = tasks.taskList.find((el) => {
+          return el.title === title.toLowerCase();
+        });
+        const indexOfTask = tasks.taskList.indexOf(x);
+        const getArrayItem = tasks.taskList[indexOfTask];
 
         if (e.target.checked) {
           getArrayItem.status = true;
         } else {
           getArrayItem.status = false;
         }
-
         dom.displayTasks();
-        console.log(tasks.taskList);
+      }
+
+      if (e.target.classList.contains("project")) {
+        const projectAll = document.querySelectorAll(".selected");
+        projectAll.forEach((item) => item.classList.remove("selected"));
+        e.target.classList.add("selected");
+        dom.displayTasks();
+      }
+
+      if (e.target.classList.contains("tasks__completed")) {
+        const projectAll = document.querySelectorAll(".selected");
+        projectAll.forEach((item) => item.classList.remove("selected"));
+        e.target.classList.add("selected");
+        dom.displayTasks();
+      }
+
+      if (e.target.classList.contains("tasks__all")) {
+        const projectAll = document.querySelectorAll(".selected");
+        projectAll.forEach((item) => item.classList.remove("selected"));
+        e.target.classList.add("selected");
+        dom.displayTasks();
+      }
+
+      if (e.target.classList.contains("projects-header")) {
+        const taskProject = document.querySelector(".tasks__projects");
+        taskProject.children[0].children[1].classList.toggle("rotate-arrow");
+        taskProject.children[2].classList.toggle("hide-projects");
+      }
+
+      if (e.target.classList.contains("project-delete")) {
+        const index =
+          e.target.parentElement.parentElement.parentElement.getAttribute(
+            "data-project-index"
+          );
+        dom.removeProject(index);
+      }
+
+      if (e.target.classList.contains("project-edit")) {
+        const index =
+          e.target.parentElement.parentElement.parentElement.getAttribute(
+            "data-project-index"
+          );
       }
     });
   };

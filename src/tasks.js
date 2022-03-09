@@ -1,31 +1,56 @@
 import dom from "./dom";
 import projects from "./projects";
+import storage from "./localStorage";
 
 const tasks = (() => {
-  const taskList = [];
+  let taskList = [];
 
+  if (localStorage.getItem("projects") === null) {
+    taskList = [
+      {
+        title: "test",
+        description: "test",
+        dueDate: `2022-4-17`,
+        priority: "Not Important",
+        projectIndex: 0,
+        status: false,
+      },
+    ];
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+  } else {
+    const parsedItem = JSON.parse(localStorage.getItem("tasks"));
+    taskList = parsedItem;
+  }
   class Task {
-    constructor(title, description, dueDate, priority, status) {
+    constructor(title, description, dueDate, priority, projectIndex, status) {
       this.title = title;
       this.description = description;
       this.dueDate = dueDate;
       this.priority = priority;
+      this.projectIndex = projectIndex;
       this.status = status;
     }
   }
 
   const addTask = () => {
-    console.log(projects.projectList.name);
-    const { taskTitle, taskDescription, taskDueDate, taskPriority } = dom;
-    const taskStatus = false;
+    const {
+      taskTitle,
+      taskDescription,
+      taskDueDate,
+      taskPriority,
+      taskProjects,
+    } = dom;
+    const status = false;
     const task = new Task(
       taskTitle.value,
       taskDescription.value,
       taskDueDate.value,
       taskPriority.value,
-      taskStatus
+      taskProjects.value,
+      status
     );
     taskList.push(task);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
   };
   const checkValidity = () => {
     let isValid = false;
@@ -37,7 +62,6 @@ const tasks = (() => {
       addTask();
       isValid = true;
     }
-    console.log(taskList);
     return isValid;
   };
 
