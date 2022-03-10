@@ -547,7 +547,8 @@ input[type="checkbox"] {
 }
 
 .add-task-modal,
-.add-project-modal {
+.add-project-modal,
+.edit-project-modal {
   display: none;
   position: absolute;
   top: 50%;
@@ -568,7 +569,8 @@ input[type="checkbox"] {
   z-index: 2;
 }
 
-.add-project-modal {
+.add-project-modal,
+.edit-project-modal {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
@@ -615,6 +617,11 @@ form textarea {
   border-radius: 0.3rem;
 }
 
+form textarea {
+  resize: none;
+  overflow-y: scroll;
+}
+
 form input:valid,
 form select:valid,
 form textarea:valid {
@@ -640,7 +647,8 @@ form .right-form {
 }
 
 form .add-task-btn,
-form .add-project-btn {
+form .add-project-btn,
+form .edit-project-btn {
   background: var(--main-color);
   color: var(--light-shade);
   border: 0;
@@ -652,12 +660,14 @@ form .add-project-btn {
 }
 
 form .add-task-btn:hover,
-form .add-project-btn:hover {
+form .add-project-btn:hover,
+form .edit-project-btn:hover {
   background: #c94c1e;
 }
 
 form .add-task-btn:active,
-form .add-project-btn:active {
+form .add-project-btn:active,
+form .edit-project-btn:active {
   -webkit-transform: scale(0.95);
           transform: scale(0.95);
 }

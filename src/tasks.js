@@ -1,26 +1,24 @@
 import dom from "./dom";
 import projects from "./projects";
-import storage from "./localStorage";
 
 const tasks = (() => {
   let taskList = [];
 
-  if (localStorage.getItem("projects") === null) {
-    taskList = [
-      {
-        title: "test",
-        description: "test",
-        dueDate: `2022-4-17`,
-        priority: "Not Important",
-        projectIndex: 0,
-        status: false,
-      },
-    ];
-    localStorage.setItem("tasks", JSON.stringify(taskList));
+  const tasksStorage = JSON.parse(localStorage.getItem("tasks"));
+  if (tasksStorage === null || !tasksStorage.length) {
+    taskList.push({
+      title: "Test",
+      description: "Test",
+      dueDate: "2022-04-8",
+      priority: "Not Important",
+      projectIndex: "0",
+      status: false,
+    });
   } else {
-    const parsedItem = JSON.parse(localStorage.getItem("tasks"));
+    const parsedItem = tasksStorage;
     taskList = parsedItem;
   }
+
   class Task {
     constructor(title, description, dueDate, priority, projectIndex, status) {
       this.title = title;

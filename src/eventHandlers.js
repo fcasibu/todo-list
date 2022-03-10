@@ -1,7 +1,6 @@
 import dom from "./dom";
 import tasks from "./tasks";
 import projects from "./projects";
-import storage from "./localStorage";
 
 const eventHandlers = (() => {
   const windowResize = () => {
@@ -14,6 +13,7 @@ const eventHandlers = (() => {
     });
   };
 
+  const arr = [];
   const clickListener = () => {
     document.addEventListener("click", (e) => {
       if (e.target.classList.contains("menu-burger")) {
@@ -21,10 +21,13 @@ const eventHandlers = (() => {
         e.stopPropagation();
         dom.toggleMenu();
       }
-
       if (e.target.classList.contains("show-modal")) {
         const { target } = e;
         dom.showModal(target);
+        console.log(target.parentElement.parentElement);
+        const index =
+          target.parentElement.parentElement.getAttribute("data-project-index");
+        arr.push(+index);
 
         dom.container.addEventListener("click", () => {
           dom.hideModal();
@@ -81,7 +84,7 @@ const eventHandlers = (() => {
           );
         const title = e.target.parentElement.children[2].textContent;
         const x = tasks.taskList.find((el) => {
-          return el.title === title.toLowerCase();
+          return el.title.toLowerCase() === title.toLowerCase();
         });
         const indexOfTask = tasks.taskList.indexOf(x);
         const getArrayItem = tasks.taskList[indexOfTask];
@@ -123,17 +126,55 @@ const eventHandlers = (() => {
 
       if (e.target.classList.contains("project-delete")) {
         const index =
-          e.target.parentElement.parentElement.parentElement.getAttribute(
+          e.target.parentElement.parentElement.getAttribute(
             "data-project-index"
           );
-        dom.removeProject(index);
+
+        tasks.taskList.slice(0).forEach((item) => {
+          if (item.projectIndex === index) {
+            if (tasks.taskList.includes(item)) {
+              const taskIndex = tasks.taskList.indexOf(item);
+              tasks.taskList.splice(taskIndex, 1);
+            }
+          }
+        });
+
+        projects.projectList.splice(index, 1);
+        dom.displayProjects();
+        const projectAll = document.querySelectorAll(".selected");
+        projectAll.forEach((item) => item.classList.remove("selected"));
+
+        const project = document.querySelectorAll(".project");
+        project.forEach((item) => item.classList.remove("selected"));
+
+        project[0].classList.add("selected");
+
+        dom.displayTasks();
+        localStorage.setItem("projects", JSON.stringify(projects.projectList));
+        localStorage.setItem("tasks", JSON.stringify(tasks.taskList));
+        dom.hideModal();
       }
 
-      if (e.target.classList.contains("project-edit")) {
-        const index =
-          e.target.parentElement.parentElement.parentElement.getAttribute(
-            "data-project-index"
-          );
+      if (e.target.classList.contains("edit-project-btn")) {
+        e.preventDefault();
+        e.stopPropagation();
+        const poppedVal = arr.pop();
+        projects.projectList[poppedVal] = {
+          name: `${dom.editProjectTitle.value}`,
+        };
+
+        dom.displayProjects();
+        const projectAll = document.querySelectorAll(".selected");
+        projectAll.forEach((item) => item.classList.remove("selected"));
+
+        const project = document.querySelectorAll(".project");
+        project.forEach((item) => item.classList.remove("selected"));
+
+        project[poppedVal].classList.add("selected");
+
+        dom.displayTasks();
+        localStorage.setItem("projects", JSON.stringify(projects.projectList));
+        dom.hideModal();
       }
     });
   };

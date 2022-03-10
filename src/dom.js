@@ -1,12 +1,12 @@
 import projects from "./projects";
 import tasks from "./tasks";
-import storage from "./localStorage";
 
 const dom = (() => {
   const menuIcon = document.querySelector(".menu-burger");
   const sideBar = document.querySelector(".sidebar");
   const addTaskModal = document.querySelector(".add-task-modal");
   const addProjectModal = document.querySelector(".add-project-modal");
+  const editProjectModal = document.querySelector(".edit-project-modal");
   const container = document.querySelector(".container");
   const mainContentContainer = document.querySelector(
     ".main-content-container"
@@ -21,6 +21,7 @@ const dom = (() => {
   const taskProjects = document.getElementById("task-projects");
 
   const projectTitle = document.getElementById("project-title");
+  const editProjectTitle = document.getElementById("edit-project-title");
 
   const taskAll = document.querySelectorAll(".task");
 
@@ -74,6 +75,10 @@ const dom = (() => {
     } else if (e.classList.contains("addproject")) {
       addProjectModal.style.display = "flex";
       projectTitle.value = "";
+    } else if (e.classList.contains("project-edit")) {
+      editProjectModal.style.display = "flex";
+      editProjectTitle.value =
+        e.parentElement.previousElementSibling.textContent;
     }
     document.body.classList.add("overflow");
 
@@ -84,6 +89,7 @@ const dom = (() => {
   const hideModal = () => {
     addTaskModal.style.display = "none";
     addProjectModal.style.display = "none";
+    editProjectModal.style.display = "none";
     document.body.classList.remove("overflow");
   };
 
@@ -126,10 +132,9 @@ const dom = (() => {
     const pUtilities = document.createElement("div");
     pUtilities.classList.add("project__utilities");
     pUtilities.innerHTML = `
-    <div class="project__utilities">
-    <i class="fa-solid fa-pen-to-square project-edit project-btn" style="pointer-events:auto"></i>
+    <i class="fa-solid fa-pen-to-square project-edit show-modal project-btn" style="pointer-events:auto"></i>
     <i class="fa-solid fa-trash project-delete project-btn" style="pointer-events:auto"></i>
-  </div>`;
+`;
 
     project.appendChild(pTitle);
     project.appendChild(pUtilities);
@@ -152,6 +157,7 @@ const dom = (() => {
 
     for (let i = 0; i < projects.projectList.length; i++) {
       const { name } = projects.projectList[i];
+      console.log(projects.projectList);
       projectList.appendChild(createProject(i, name));
       taskProjects.appendChild(createTaskOption(i, name));
     }
@@ -193,7 +199,6 @@ const dom = (() => {
     const task = document.querySelectorAll(".task-list__task");
     if (status === true) {
       taskStatus[i].checked = true;
-      console.log(taskStatus[i].checked);
       taskLeftTitle[i].style.textDecoration = "line-through";
       taskLeftTitle[i].style.opacity = 0.6;
       task[i].style.backgroundColor = "#eee";
@@ -228,46 +233,54 @@ const dom = (() => {
 
     const taskList = document.querySelector(".task-list");
     const mainContent = document.querySelector(".main-content");
-    const projectIndex = mainContent.getAttribute("data-project-index");
+    if (mainContent !== null) {
+      const projectIndex = mainContent.getAttribute("data-project-index");
+      const filteredList = tasks.taskList.filter((item) => {
+        if (selected.classList.contains("project")) {
+          return item.projectIndex === projectIndex;
+        }
+        if (selected.classList.contains("tasks__completed")) {
+          return item.status === true;
+        }
+        if (selected.classList.contains("tasks__all")) {
+          return item;
+        }
+      });
 
-    const filteredList = tasks.taskList.filter((item) => {
-      if (selected.classList.contains("project")) {
-        return item.projectIndex === projectIndex;
-      }
-      if (selected.classList.contains("tasks__completed")) {
-        return item.status === true;
-      }
-      if (selected.classList.contains("tasks__all")) {
-        return item;
-      }
-    });
+      for (let i = 0; i < filteredList.length; i++) {
+        const { title, dueDate, status } = filteredList[i];
+        taskList.appendChild(createTask(i, title, dueDate, projectIndex));
 
-    console.log(filteredList);
-    for (let i = 0; i < filteredList.length; i++) {
-      const { title, dueDate, status } = filteredList[i];
-      taskList.appendChild(createTask(i, title, dueDate, projectIndex));
-
-      checkStatus(status, i);
+        checkStatus(status, i);
+      }
     }
   };
 
   const removeTask = (title) => {
     const x = tasks.taskList.find((el) => {
-      return el.title === title.toLowerCase();
+      return el.title.toLowerCase() === title.toLowerCase();
     });
     const indexOfTask = tasks.taskList.indexOf(x);
-    console.log(tasks.taskList.splice(indexOfTask, 1));
+    tasks.taskList.splice(indexOfTask, 1);
     localStorage.setItem("tasks", JSON.stringify(tasks.taskList));
     displayTasks();
   };
 
   const removeProject = (index) => {
+    tasks.taskList.slice(0).forEach((item) => {
+      if (item.projectIndex === index) {
+        if (tasks.taskList.includes(item)) {
+          const taskIndex = tasks.taskList.indexOf(item);
+          tasks.taskList.splice(taskIndex, 1);
+        }
+      }
+    });
+
     projects.projectList.splice(index, 1);
+
     localStorage.setItem("projects", JSON.stringify(projects.projectList));
+    localStorage.setItem("tasks", JSON.stringify(tasks.taskList));
     displayProjects();
-    const project = document.querySelectorAll(".project");
-    project[0].classList.add("selected");
-    console.log("hey");
     displayTasks();
   };
 
@@ -290,6 +303,7 @@ const dom = (() => {
     taskProjects,
     projectTitle,
     addTaskModal,
+    editProjectTitle,
   };
 })();
 
