@@ -75,6 +75,7 @@ const eventHandlers = (() => {
         removeSelected();
         project[project.length - 1].classList.add("selected");
         displayTasks();
+        hideModal();
       }
 
       if (e.target.classList.contains("add-task-btn")) {
