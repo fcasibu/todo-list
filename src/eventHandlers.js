@@ -65,8 +65,9 @@ const eventHandlers = (() => {
       if (e.target.classList.contains("add-project-btn")) {
         e.preventDefault();
         const projectTitle = document.querySelector("#project-title");
-        const index = projects.getProjectList().length;
+        const index = getProjectList().length;
 
+        if (!projectTitle.value.length) return;
         addProject(projectTitle.value, index);
         displayProjects();
         const project = document.querySelectorAll(".project");
