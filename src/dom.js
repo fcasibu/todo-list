@@ -12,6 +12,7 @@ const dom = (() => {
   const modal = document.querySelector(".modal");
   const infoModal = document.querySelector(".info-modal__body");
   const formContainer = document.querySelector("form");
+  const arrowDown = document.querySelector(".arrow-down");
 
   const generateForm = (
     className,
@@ -228,9 +229,7 @@ const dom = (() => {
       if (selected.classList.contains("tasks__completed")) {
         return item.status === true;
       }
-      if (selected.classList.contains("tasks__all")) {
-        return item;
-      }
+      return item;
     });
     return filteredList;
   };
@@ -300,6 +299,16 @@ const dom = (() => {
     hideSideBar();
   };
 
+  const hideProjects = () => {
+    projectContainer.classList.remove("show-projects");
+    arrowDown.classList.remove("rotate-arrow");
+  };
+
+  const showProjects = () => {
+    projectContainer.classList.add("show-projects");
+    arrowDown.classList.add("rotate-arrow");
+  };
+
   return {
     container,
     generateModal,
@@ -312,6 +321,8 @@ const dom = (() => {
     toggleMenu,
     hideResize,
     showResize,
+    hideProjects,
+    showProjects,
   };
 })();
 

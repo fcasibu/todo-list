@@ -24,6 +24,10 @@ const projects = (() => {
     setLocalStorage("projects", projectList);
   };
 
+  const findMaxIndex = () => {
+    return Math.max(...projectList.map((el) => el.projectIndex)) + 1;
+  };
+
   const findTask = (taskList, projectIndex) => {
     const indexArray = [];
     taskList.forEach((task) => {
@@ -66,7 +70,13 @@ const projects = (() => {
     setLocalStorage("projects", projectList);
   };
 
-  return { addProject, removeProject, getProjectList, editProject };
+  return {
+    addProject,
+    removeProject,
+    getProjectList,
+    editProject,
+    findMaxIndex,
+  };
 })();
 
 export default projects;

@@ -23,8 +23,16 @@ const eventHandlers = (() => {
       displayTasks,
       removeSelected,
       toggleMenu,
+      hideProjects,
+      showProjects,
     } = dom;
-    const { addProject, removeProject, getProjectList, editProject } = projects;
+    const {
+      addProject,
+      removeProject,
+      getProjectList,
+      editProject,
+      findMaxIndex,
+    } = projects;
     const { addTask, removeTask, getTaskInfo, changeTaskStatus } = tasks;
 
     document.addEventListener("click", (e) => {
@@ -66,9 +74,9 @@ const eventHandlers = (() => {
         e.preventDefault();
         const projectTitle = document.querySelector("#project-title");
         const index = getProjectList().length;
-
         if (!projectTitle.value.length) return;
-        addProject(projectTitle.value, index);
+        const newIndex = findMaxIndex();
+        addProject(projectTitle.value, index >= 1 ? newIndex : index);
         displayProjects();
         const project = document.querySelectorAll(".project");
 
@@ -76,6 +84,7 @@ const eventHandlers = (() => {
         project[project.length - 1].classList.add("selected");
         displayTasks();
         hideModal();
+        showProjects();
       }
 
       if (e.target.classList.contains("add-task-btn")) {
@@ -123,6 +132,7 @@ const eventHandlers = (() => {
         displayProjects();
         if (getProjectList().length === 0) {
           tasksAll.classList.add("selected");
+          hideProjects();
           displayTasks();
         }
       }
@@ -222,6 +232,16 @@ const eventHandlers = (() => {
         }
         changeTaskStatus(arr, status);
         displayTasks();
+      }
+
+      if (e.target.classList.contains("projects-header")) {
+        if (
+          e.target.parentElement.children[2].classList.contains("show-projects")
+        ) {
+          hideProjects();
+        } else {
+          showProjects();
+        }
       }
     });
   };

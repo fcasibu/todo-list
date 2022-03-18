@@ -345,8 +345,10 @@ body {
   gap: 0.3rem;
 }
 
-.hide-projects {
+.show-projects {
   max-height: 500px;
+  -webkit-transition: all 200ms ease-in-out;
+  transition: all 200ms ease-in-out;
 }
 
 .arrow-down {

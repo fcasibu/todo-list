@@ -51,3 +51,4 @@ I kind of knew this already, but it completely slipped my mind
 
 - [Design Inspiration](https://mooniidev.github.io/todo-list/)
 - [The Odin Project](https://www.theodinproject.com/)
+- [achoito](https://github.com/greqov) For finding out some issues in the app
