@@ -1,9 +1,8 @@
-import eventHandlers from "./eventHandlers";
 import dom from "./dom";
-import storage from "./localStorage";
+import eventHandlers from "./eventHandlers";
+
+eventHandlers.clickHandler();
+eventHandlers.resizeHandler();
 
 dom.displayProjects();
 dom.displayTasks();
-
-eventHandlers.clickListener();
-eventHandlers.windowResize();

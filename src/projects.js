@@ -1,43 +1,72 @@
-import dom from "./dom";
 import tasks from "./tasks";
+import { setLocalStorage, getLocalStorage } from "./localStorage";
 
 const projects = (() => {
-  let projectList = [];
-
-  const projectStorage = JSON.parse(localStorage.getItem("projects"));
-  if (projectStorage === null || !projectStorage.length) {
-    projectList.push({ name: "test" });
-  } else {
-    const parsedItem = projectStorage;
-    projectList = parsedItem;
-  }
-
-  class Project {
-    constructor(name) {
-      this.name = name;
+  const projectList = JSON.parse(getLocalStorage("projects")) || [
+    { projectTitle: "Todolist project", projectIndex: 0 },
+    { projectTitle: "Tic Tac Toe Project", projectIndex: 1 },
+  ];
+  class Projects {
+    constructor(title, index) {
+      this.projectTitle = title;
+      this.projectIndex = index;
     }
   }
 
-  const addProject = () => {
-    const { projectTitle } = dom;
-    const project = new Project(projectTitle.value);
+  const getProjectList = () => {
+    return projectList;
+  };
+
+  const addProject = (title, index) => {
+    const project = new Projects(title, index);
+
     projectList.push(project);
-    localStorage.setItem("projects", JSON.stringify(projectList));
+    setLocalStorage("projects", projectList);
   };
 
-  const checkValidity = () => {
-    let isValid = false;
-    const { projectTitle } = dom;
-    if (!projectTitle.value.length) {
-      isValid = false;
-    } else {
-      addProject();
-      isValid = true;
+  const findTask = (taskList, projectIndex) => {
+    const indexArray = [];
+    taskList.forEach((task) => {
+      if (task.projectIndex === projectIndex) {
+        indexArray.push(taskList.indexOf(task));
+      }
+    });
+
+    return indexArray;
+  };
+
+  const findProject = (value, propName) => {
+    for (let i = 0; i < projectList.length; i++) {
+      if (projectList[i][propName] === value) {
+        return projectList.indexOf(projectList[i]);
+      }
     }
-    return isValid;
   };
 
-  return { addProject, checkValidity, projectList };
+  const removeProjectTasks = (projectIndex) => {
+    const { getTaskList } = tasks;
+    const taskList = getTaskList();
+    const indexArr = findTask(taskList, projectIndex);
+    for (let i = indexArr.length; i > 0; i--) {
+      taskList.splice(indexArr.pop(), 1);
+    }
+    setLocalStorage("tasks", taskList);
+  };
+
+  const removeProject = (projectIndex) => {
+    const indexOfProject = findProject(projectIndex, "projectIndex");
+    removeProjectTasks(projectIndex);
+    projectList.splice(indexOfProject, 1);
+    setLocalStorage("projects", projectList);
+  };
+
+  const editProject = (title, value) => {
+    const indexOfProject = findProject(title, "projectTitle");
+    projectList[indexOfProject].projectTitle = value;
+    setLocalStorage("projects", projectList);
+  };
+
+  return { addProject, removeProject, getProjectList, editProject };
 })();
 
 export default projects;

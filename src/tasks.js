@@ -1,28 +1,88 @@
-import dom from "./dom";
-import projects from "./projects";
+import { getLocalStorage, setLocalStorage } from "./localStorage";
 
 const tasks = (() => {
-  let taskList = [];
-
-  const tasksStorage = JSON.parse(localStorage.getItem("tasks"));
-  if (tasksStorage === null || !tasksStorage.length) {
-    taskList.push({
-      title: "Test",
-      description: "Test",
-      dueDate: "2022-04-8",
+  const taskList = JSON.parse(getLocalStorage("tasks")) || [
+    {
+      taskTitle: "Improve UI Design",
+      dueDate: "2022-03-21",
+      priority: "Very Important",
+      projectIndex: 0,
+      status: true,
+    },
+    {
+      taskTitle: "Implement nav animation",
+      dueDate: "2022-03-18",
       priority: "Not Important",
-      projectIndex: "0",
+      projectIndex: 0,
+      status: true,
+    },
+    {
+      taskTitle: "Implement localstorage",
+      dueDate: "2022-03-18",
+      priority: "Important",
+      projectIndex: 0,
+      status: true,
+    },
+    {
+      taskTitle: "Add description for tasks",
+      dueDate: "2022-03-30",
+      priority: "Not Important",
+      projectIndex: 0,
       status: false,
-    });
-  } else {
-    const parsedItem = tasksStorage;
-    taskList = parsedItem;
-  }
-
+    },
+    {
+      taskTitle: "Implement date-fns",
+      dueDate: "2022-03-31",
+      priority: "Important",
+      projectIndex: 0,
+      status: false,
+    },
+    {
+      taskTitle: "Create logic for winning condition and tie",
+      dueDate: "2022-03-15",
+      priority: "Very Important",
+      projectIndex: 1,
+      status: true,
+    },
+    {
+      taskTitle: "Improve UI Design",
+      dueDate: "2022-03-15",
+      priority: "Very Important",
+      projectIndex: 1,
+      status: true,
+    },
+    {
+      taskTitle: "Implement minimax algorithm",
+      dueDate: "2022-03-31",
+      priority: "Not Important",
+      projectIndex: 1,
+      status: false,
+    },
+    {
+      taskTitle: "Change task  title color based on priority",
+      dueDate: "2022-03-29",
+      priority: "Very Important",
+      projectIndex: 0,
+      status: false,
+    },
+    {
+      taskTitle: "Implement dark mode",
+      dueDate: "2025-04-23",
+      priority: "Not Important",
+      projectIndex: 0,
+      status: false,
+    },
+    {
+      taskTitle: "Code refactor",
+      dueDate: "2022-04-01",
+      priority: "Very Important",
+      projectIndex: 0,
+      status: false,
+    },
+  ];
   class Task {
-    constructor(title, description, dueDate, priority, projectIndex, status) {
-      this.title = title;
-      this.description = description;
+    constructor(title, dueDate, priority, projectIndex, status) {
+      this.taskTitle = title;
       this.dueDate = dueDate;
       this.priority = priority;
       this.projectIndex = projectIndex;
@@ -30,40 +90,56 @@ const tasks = (() => {
     }
   }
 
-  const addTask = () => {
-    const {
-      taskTitle,
-      taskDescription,
-      taskDueDate,
-      taskPriority,
-      taskProjects,
-    } = dom;
-    const status = false;
-    const task = new Task(
-      taskTitle.value,
-      taskDescription.value,
-      taskDueDate.value,
-      taskPriority.value,
-      taskProjects.value,
-      status
-    );
-    taskList.push(task);
-    localStorage.setItem("tasks", JSON.stringify(taskList));
-  };
-  const checkValidity = () => {
-    let isValid = false;
-    const { taskTitle, taskDueDate } = dom;
-    if (!taskTitle.value.length || !taskDueDate.value.length) {
-      console.log("test");
-      isValid = false;
-    } else {
-      addTask();
-      isValid = true;
-    }
-    return isValid;
+  const getTaskList = () => {
+    return taskList;
   };
 
-  return { checkValidity, taskList };
+  const addTask = (title, dueDate, priority, projectIndex) => {
+    const task = new Task(title, dueDate, priority, projectIndex, false);
+
+    taskList.push(task);
+    setLocalStorage("tasks", taskList);
+  };
+
+  const findTask = (taskTitle, projectIndex) => {
+    for (const task of taskList) {
+      if (task.taskTitle === taskTitle && task.projectIndex === projectIndex) {
+        return taskList.indexOf(task);
+      }
+    }
+  };
+
+  const removeTask = (taskTitle, projectIndex) => {
+    const index = findTask(taskTitle, projectIndex);
+    taskList.splice(index, 1);
+    setLocalStorage("tasks", taskList);
+  };
+
+  const getTaskInfo = (taskTitle, projectIndex) => {
+    const index = findTask(taskTitle, projectIndex);
+    return taskList[index];
+  };
+
+  const editTask = (arr, title, priority, dueDate) => {
+    arr.taskTitle = title;
+    arr.priority = priority;
+    arr.dueDate = dueDate;
+    setLocalStorage("tasks", taskList);
+  };
+
+  const changeTaskStatus = (arr, status) => {
+    arr.status = status;
+    setLocalStorage("tasks", taskList);
+  };
+
+  return {
+    getTaskList,
+    addTask,
+    removeTask,
+    getTaskInfo,
+    editTask,
+    changeTaskStatus,
+  };
 })();
 
 export default tasks;

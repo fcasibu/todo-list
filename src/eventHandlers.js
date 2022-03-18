@@ -1,11 +1,11 @@
 import dom from "./dom";
-import tasks from "./tasks";
 import projects from "./projects";
+import tasks from "./tasks";
 
 const eventHandlers = (() => {
-  const windowResize = () => {
+  const resizeHandler = () => {
     window.addEventListener("resize", () => {
-      if (window.innerWidth <= 900) {
+      if (window.innerWidth <= 1100) {
         dom.hideResize();
       } else {
         dom.showResize();
@@ -13,173 +13,218 @@ const eventHandlers = (() => {
     });
   };
 
-  const arr = [];
-  const clickListener = () => {
+  const clickHandler = () => {
+    const {
+      container,
+      generateModal,
+      showInfoModal,
+      hideModal,
+      displayProjects,
+      displayTasks,
+      removeSelected,
+      toggleMenu,
+    } = dom;
+    const { addProject, removeProject, getProjectList, editProject } = projects;
+    const { addTask, removeTask, getTaskInfo, changeTaskStatus } = tasks;
+
     document.addEventListener("click", (e) => {
       if (e.target.classList.contains("menu-burger")) {
-        e.preventDefault();
-        e.stopPropagation();
-        dom.toggleMenu();
+        toggleMenu();
       }
-      if (e.target.classList.contains("show-modal")) {
-        const { target } = e;
-        dom.showModal(target);
-        console.log(target.parentElement.parentElement);
-        const index =
-          target.parentElement.parentElement.getAttribute("data-project-index");
-        arr.push(+index);
 
-        dom.container.addEventListener("click", () => {
-          dom.hideModal();
-        });
+      if (e.target.classList.contains("addproject")) {
+        generateModal(
+          "New Project",
+          "project-title",
+          "add-project-btn",
+          "Add Project",
+          false
+        );
+
+        container.addEventListener("click", hideModal);
+      }
+
+      if (e.target.classList.contains("addtask")) {
+        generateModal(
+          "New Task",
+          "task-title",
+          "add-task-btn",
+          "Add Task",
+          true
+        );
+
+        container.addEventListener("click", hideModal);
       }
 
       if (e.target.classList.contains("close-modal")) {
-        dom.hideModal();
+        hideModal();
+
+        container.addEventListener("click", hideModal);
       }
 
       if (e.target.classList.contains("add-project-btn")) {
         e.preventDefault();
-        e.stopPropagation();
+        const projectTitle = document.querySelector("#project-title");
+        const index = projects.getProjectList().length;
 
-        const validCheck = projects.checkValidity();
-        dom.displayProjects();
-        const projectAll = document.querySelectorAll(".selected");
-        projectAll.forEach((item) => item.classList.remove("selected"));
-
+        addProject(projectTitle.value, index);
+        displayProjects();
         const project = document.querySelectorAll(".project");
-        project.forEach((item) => item.classList.remove("selected"));
 
+        removeSelected();
         project[project.length - 1].classList.add("selected");
-
-        const taskProject = document.querySelector(".tasks__projects");
-        taskProject.children[0].children[1].classList.add("rotate-arrow");
-        taskProject.children[2].classList.add("hide-projects");
-        dom.displayTasks();
-        if (validCheck === true) {
-          dom.hideModal();
-        }
+        displayTasks();
       }
 
       if (e.target.classList.contains("add-task-btn")) {
         e.preventDefault();
-
-        const validCheck = tasks.checkValidity();
-        dom.displayTasks();
-        if (validCheck === true) {
-          dom.hideModal();
-        }
-      }
-
-      if (e.target.classList.contains("task-delete")) {
-        const title = e.target.parentElement.previousElementSibling.children[2];
-
-        dom.removeTask(title.textContent);
-      }
-
-      if (e.target.type === "checkbox") {
-        const index =
-          e.target.parentElement.parentElement.getAttribute(
-            "data-project-index"
-          );
-        const title = e.target.parentElement.children[2].textContent;
-        const x = tasks.taskList.find((el) => {
-          return el.title.toLowerCase() === title.toLowerCase();
-        });
-        const indexOfTask = tasks.taskList.indexOf(x);
-        const getArrayItem = tasks.taskList[indexOfTask];
-
-        if (e.target.checked) {
-          getArrayItem.status = true;
-        } else {
-          getArrayItem.status = false;
-        }
-        dom.displayTasks();
+        const taskTitle = document.querySelector("#task-title");
+        const taskDate = document.querySelector("#task-date");
+        const taskPriority = document.querySelector("#task-priority");
+        const projectIndex =
+          +document.querySelector(".main-content").dataset.projectIndex;
+        if (!taskTitle.length && !taskDate.checkValidity()) return;
+        addTask(
+          taskTitle.value,
+          taskDate.value,
+          taskPriority.value,
+          projectIndex
+        );
+        displayTasks();
+        hideModal();
       }
 
       if (e.target.classList.contains("project")) {
-        const projectAll = document.querySelectorAll(".selected");
-        projectAll.forEach((item) => item.classList.remove("selected"));
+        removeSelected();
         e.target.classList.add("selected");
-        dom.displayTasks();
-      }
-
-      if (e.target.classList.contains("tasks__completed")) {
-        const projectAll = document.querySelectorAll(".selected");
-        projectAll.forEach((item) => item.classList.remove("selected"));
-        e.target.classList.add("selected");
-        dom.displayTasks();
+        displayTasks();
       }
 
       if (e.target.classList.contains("tasks__all")) {
-        const projectAll = document.querySelectorAll(".selected");
-        projectAll.forEach((item) => item.classList.remove("selected"));
+        removeSelected();
         e.target.classList.add("selected");
-        dom.displayTasks();
+        displayTasks();
       }
 
-      if (e.target.classList.contains("projects-header")) {
-        const taskProject = document.querySelector(".tasks__projects");
-        taskProject.children[0].children[1].classList.toggle("rotate-arrow");
-        taskProject.children[2].classList.toggle("hide-projects");
+      if (e.target.classList.contains("task-delete")) {
+        const taskName =
+          e.target.parentElement.previousElementSibling.children[2].textContent;
+        const { projectIndex } = e.target.parentElement.parentElement.dataset;
+        removeTask(taskName, +projectIndex);
+        displayTasks();
       }
 
       if (e.target.classList.contains("project-delete")) {
-        const index =
-          e.target.parentElement.parentElement.getAttribute(
-            "data-project-index"
-          );
+        const { projectIndex } = e.target.parentElement.parentElement.dataset;
+        const tasksAll = document.querySelector(".tasks__all");
+        removeProject(+projectIndex);
+        displayProjects();
+        if (getProjectList().length === 0) {
+          tasksAll.classList.add("selected");
+          displayTasks();
+        }
+      }
 
-        tasks.taskList.slice(0).forEach((item) => {
-          if (item.projectIndex === index) {
-            if (tasks.taskList.includes(item)) {
-              const taskIndex = tasks.taskList.indexOf(item);
-              tasks.taskList.splice(taskIndex, 1);
-            }
-          }
-        });
+      if (e.target.classList.contains("project-edit")) {
+        const projectTitle =
+          e.target.parentElement.previousElementSibling.textContent;
+        generateModal(
+          `Edit Project`,
+          "project-title",
+          "edit-project-btn",
+          "Edit Project",
+          false,
+          "",
+          projectTitle
+        );
 
-        projects.projectList.splice(index, 1);
-        dom.displayProjects();
-        const projectAll = document.querySelectorAll(".selected");
-        projectAll.forEach((item) => item.classList.remove("selected"));
-
-        const project = document.querySelectorAll(".project");
-        project.forEach((item) => item.classList.remove("selected"));
-
-        project[0].classList.add("selected");
-
-        dom.displayTasks();
-        localStorage.setItem("projects", JSON.stringify(projects.projectList));
-        localStorage.setItem("tasks", JSON.stringify(tasks.taskList));
-        dom.hideModal();
+        container.addEventListener("click", hideModal);
       }
 
       if (e.target.classList.contains("edit-project-btn")) {
         e.preventDefault();
-        e.stopPropagation();
-        const poppedVal = arr.pop();
-        projects.projectList[poppedVal] = {
-          name: `${dom.editProjectTitle.value}`,
-        };
+        const getTitleValue = document.querySelector("#project-title");
+        const { value } = getTitleValue;
+        const title = getTitleValue.name;
+        if (!value.length) return;
 
-        dom.displayProjects();
-        const projectAll = document.querySelectorAll(".selected");
-        projectAll.forEach((item) => item.classList.remove("selected"));
+        editProject(title, value);
+        displayProjects();
+        hideModal();
+      }
 
-        const project = document.querySelectorAll(".project");
-        project.forEach((item) => item.classList.remove("selected"));
+      if (e.target.classList.contains("task-info")) {
+        const index = e.target.parentElement.parentElement.dataset.projectIndex;
+        const title =
+          e.target.parentElement.previousElementSibling.children[2].textContent;
+        const { taskTitle, priority, status, dueDate } = getTaskInfo(
+          title,
+          +index
+        );
+        showInfoModal(taskTitle, status, priority, dueDate);
+        container.addEventListener("click", hideModal);
+      }
 
-        project[poppedVal].classList.add("selected");
+      if (e.target.classList.contains("task-edit")) {
+        const index = e.target.parentElement.parentElement.dataset.projectIndex;
+        const title =
+          e.target.parentElement.previousElementSibling.children[2].textContent;
 
-        dom.displayTasks();
-        localStorage.setItem("projects", JSON.stringify(projects.projectList));
-        dom.hideModal();
+        const arr = getTaskInfo(title, +index);
+        generateModal(
+          "Edit Task",
+          "task-title",
+          "edit-task-btn",
+          "Edit Task",
+          true,
+          arr.dueDate,
+          title
+        );
+        const taskPriority = document.querySelector("#task-priority");
+        const taskTitle = document.querySelector("#task-title");
+        const taskDueDate = document.querySelector("#task-date");
+        taskPriority.value = arr.priority;
+
+        const editTaskBtn = document.querySelector(".edit-task-btn");
+
+        editTaskBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          tasks.editTask(
+            arr,
+            taskTitle.value,
+            taskPriority.value,
+            taskDueDate.value
+          );
+
+          displayTasks();
+          hideModal();
+        });
+
+        container.addEventListener("click", hideModal);
+      }
+
+      if (e.target.classList.contains("tasks__completed")) {
+        removeSelected();
+        e.target.classList.add("selected");
+        displayTasks();
+      }
+
+      if (e.target.type === "checkbox") {
+        const index = e.target.parentElement.parentElement.dataset.projectIndex;
+        const title = e.target.parentElement.children[2].textContent;
+        let status = false;
+        const arr = getTaskInfo(title, +index);
+
+        if (e.target.checked) {
+          status = true;
+        }
+        changeTaskStatus(arr, status);
+        displayTasks();
       }
     });
   };
 
-  return { clickListener, windowResize };
+  return { clickHandler, resizeHandler };
 })();
 
 export default eventHandlers;
