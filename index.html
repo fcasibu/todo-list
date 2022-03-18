@@ -39,7 +39,7 @@
             <div class="projects-header">
               <div>
                 <i class="fa-solid fa-list"></i> Projects
-                <span class="projects-count">(3)</span>
+                <span class="projects-count"></span>
               </div>
               <i class="fa-solid fa-angle-down arrow-down"></i>
             </div>
@@ -47,80 +47,47 @@
               <i class="fa-solid fa-circle-plus"></i>
               <p>Add new project</p>
             </div>
-            <div class="projects"></div>
+            <div class="projects hide-projects">
+              <div class="project task selected" data-project-index="0">
+                <p class="project__title">gym</p>
+                <div class="project__utilities">
+                  <i
+                    class="fa-solid fa-pen-to-square project-edit show-modal project-btn"
+                    style="pointer-events: auto"
+                  ></i>
+                  <i
+                    class="fa-solid fa-trash project-delete project-btn"
+                    style="pointer-events: auto"
+                  ></i>
+                </div>
+              </div>
+            </div>
           </li>
         </ul>
       </aside>
-      <div class="main-content-container"></div>
-    </div>
-    <div class="add-project-modal">
-      <div class="add-project-header">
-        <h2>New Project <i class="fa-solid fa-xmark close-modal"></i></h2>
+      <div class="main-content-container">
+        </div>
       </div>
-      <form>
-        <label for="project-title">Title</label>
-        <input
-          type="text"
-          name="Project Title"
-          id="project-title"
-          required
-          autocomplete="off"
-        />
-        <button type="submit" class="add-project-btn">Add project</button>
-      </form>
     </div>
-    <div class="edit-project-modal">
-      <div class="edit-project-header">
-        <h2>Edit Project <i class="fa-solid fa-xmark close-modal"></i></h2>
+
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="title">New Project</h2>
+        <i class="fa-solid fa-xmark close-modal"></i>
       </div>
-      <form>
-        <label for="edit-project-title">Title</label>
-        <input
-          type="text"
-          name="Project Title"
-          id="edit-project-title"
-          required
-          autocomplete="off"
-        />
-        <button type="submit" class="edit-project-btn">Edit project</button>
-      </form>
+      <form></form>
     </div>
-    <div class="add-task-modal">
-      <div class="add-task-header">
-        <h2>New Task <i class="fa-solid fa-xmark close-modal"></i></h2>
+    <div class="info-modal">
+      <div class="info-modal__header">
+        <h2 class="title">Task</h2>
+        <i class="fa-solid fa-xmark close-modal"></i>
       </div>
-      <form>
-        <div class="title-box">
-          <label for="task-title">Title</label>
-          <input type="text" name="Task Title" id="task-title" required />
-        </div>
-        <div class="description-box">
-          <label for="task-description">Description</label>
-          <textarea
-            name="Description"
-            id="task-description"
-            cols="30"
-            rows="5"
-          ></textarea>
-        </div>
-        <div class="date-box">
-          <label for="task-date">Due Date</label>
-          <input type="date" name="Task Due Date" id="task-date" required />
-        </div>
-        <div class="priority-box">
-          <label for="task-priority">Priority</label>
-          <select name="Task Priority" id="task-priority">
-            <option value="Not Important">Not Important</option>
-            <option value="Important">Important</option>
-            <option value="Very Important">Very Important</option>
-          </select>
-        </div>
-        <div class="projects-box">
-          <label for="task-projects">Project Name</label>
-          <select name="Task Projects" id="task-projects"></select>
-        </div>
-        <button type="submit" class="add-task-btn">Add task</button>
-      </form>
+      <hr>
+      <div class="info-modal__body">
+
+      </div>
+      <hr>
+      <button class="close-modal">Close</button>
     </div>
     <script src="main.js"></script>
   </body>
