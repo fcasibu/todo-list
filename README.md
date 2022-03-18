@@ -45,6 +45,8 @@ for (let i = arr.length; i > 0; i--) {
 }
 ```
 
+I kind of knew this already, but it completely slipped my mind
+
 ## Acknowledgements
 
 - [Design Inspiration](https://mooniidev.github.io/todo-list/)
